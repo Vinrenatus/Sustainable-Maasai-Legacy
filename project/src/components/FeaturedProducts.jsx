@@ -38,7 +38,10 @@ const FeaturedProducts = () => {
                 </button>
               </div>
               <h3 className="text-lg font-semibold mb-2">{product.name}</h3>
-              <p className="text-stone-600">${product.price}</p>
+              {/* Price Element with enhanced styling */}
+              <p className="text-2xl font-bold text-green-500 hover:text-green-600 transition-colors">
+                ${product.price}
+              </p>
             </div>
           ))}
         </div>

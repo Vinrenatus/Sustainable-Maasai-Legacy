@@ -26,8 +26,9 @@ const Hero = () => {
 
   return (
     <div className="relative h-[80vh]">
+      {/* Background image with hover effects for a slight zoom and brightness change */}
       <div
-        className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
+        className="absolute inset-0 bg-cover bg-center transition-all duration-1000 hover:scale-105 hover:brightness-110"
         style={{ backgroundImage: `url(${images[currentImage]})` }}
       >
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
@@ -35,14 +36,14 @@ const Hero = () => {
       <div className="relative h-full flex items-center justify-center text-center px-4">
         <div className="max-w-3xl">
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
-            Authentic Maasai Craftsmanship
+            Sustainable Maasai Legacy
           </h1>
           <p className="text-xl text-white mb-8">
             Discover handcrafted treasures that preserve culture and support sustainable artistry
           </p>
 
           {/* Sign-up or Login Message with Red Background */}
-          <div className="mb-6 text-white bg-red-600 p-4 rounded-md">
+          <div className="mb-6 text-white bg-red-600 p-4 rounded-md transition-all hover:bg-red-700 hover:scale-105">
             <p className="text-lg font-semibold">
               Sign up or log in to enable purchases and explore more!
             </p>
@@ -50,10 +51,12 @@ const Hero = () => {
 
           <button
             onClick={() => navigate('/signup')}
-            className="bg-stone-800 text-white px-8 py-3 rounded-md hover:bg-stone-700 transition-colors"
+            className="bg-stone-800 text-white px-8 py-3 rounded-md transition-all hover:bg-stone-700 hover:scale-105"
           >
             Join Us
           </button>
+
+        
         </div>
       </div>
     </div>

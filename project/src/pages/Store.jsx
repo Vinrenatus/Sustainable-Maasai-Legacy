@@ -14,15 +14,33 @@ const Store = () => {
 
   return (
     <div className="max-w-7xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6">Store</h1>
+      <h1 className="text-3xl font-bold mb-6 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent transition-all duration-300 hover:scale-105">
+        Store
+      </h1>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {products.map(product => (
-          <div key={product.id} className="border p-4 rounded-lg bg-white shadow-lg transform transition duration-300 hover:scale-105 hover:shadow-xl">
-            <img src={product.image_url} alt={product.name} className="w-full h-48 object-cover mb-4 rounded-lg" />
-            <h2 className="text-xl font-bold text-indigo-800">{product.name}</h2>
-            <p className="text-gray-700">${product.price}</p>
-            <p className="mt-2 text-gray-600 text-justify">{product.description}</p>
-            <button onClick={() => addToCart(product)} className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300">
+          <div
+            key={product.id}
+            className="border p-4 rounded-lg bg-white shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+          >
+            <img
+              src={product.image_url}
+              alt={product.name}
+              className="w-full h-48 object-cover mb-4 rounded-lg transition-all duration-300 hover:scale-105"
+            />
+            <h2 className="text-xl font-bold text-indigo-800">
+              {product.name}
+            </h2>
+            <p className="text-2xl font-extrabold text-green-600 my-2">
+              ${product.price}
+            </p>
+            <p className="mt-2 text-gray-600 text-justify">
+              {product.description}
+            </p>
+            <button
+              onClick={() => addToCart(product)}
+              className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+            >
               Add to Cart
             </button>
           </div>

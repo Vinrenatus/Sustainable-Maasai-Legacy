@@ -7,37 +7,48 @@ function BecomeWarrior() {
       description:
         "📜 Earn a prestigious certificate officially recognized by the Maasai community, symbolizing your warrior status.",
       imgSrc:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTuvifszIMpn0vp-1OZlvxLyg-bxmzPY2B05Q&s",
+        "https://images.pexels.com/photos/669615/pexels-photo-669615.jpeg?auto=compress&cs=tinysrgb&w=150",
+      alt: "Maasai Warrior Certificate"
     },
     {
-      title: 'A square inch of land',
-      description: '🌍 Own a Piece of Maasai Heritage. Secure a symbolic stake in Maasai land, representing your dedication to cultural preservation and conservation efforts. Immerse yourself in authentic warrior traditions through exclusive access to sacred ceremonies.',
-      imgSrc: 'https://www.siyabona.com/images/olonana-tented-safari-camp-cultural-visit-500x300.jpg?t=1737116029',
-      alt: 'Square Inch Land',
+      title: "A square inch of land",
+      description:
+        "🌍 Own a Piece of Maasai Heritage. Secure a symbolic stake in Maasai land, representing your dedication to cultural preservation and conservation efforts. Immerse yourself in authentic warrior traditions through exclusive access to sacred ceremonies.",
+      imgSrc:
+        "https://images.pexels.com/photos/364248/pexels-photo-364248.jpeg?auto=compress&cs=tinysrgb&w=150",
+      alt: "Square Inch of Land"
     },
     {
-      title: 'Special Merchandise Discounts 🛍️',
-      description: '🔥 Exclusive Warrior Gear & Handcrafted Artifacts 🔥. Gain privileged access to authentic Maasai warrior merchandise. Enjoy special discounts as part of this elite community.',
-      imgSrc: 'https://img.freepik.com/free-vector/collection-six-discount-stickers_23-2147733610.jpg',
-      alt: 'Merchandise Discounts',
+      title: "Special Merchandise Discounts 🛍️",
+      description:
+        "🔥 Exclusive Warrior Gear & Handcrafted Artifacts 🔥. Gain privileged access to authentic Maasai warrior merchandise. Enjoy special discounts as part of this elite community.",
+      imgSrc:
+        "https://images.pexels.com/photos/267320/pexels-photo-267320.jpeg?auto=compress&cs=tinysrgb&w=150",
+      alt: "Merchandise Discounts"
     },
     {
-      title: 'One acre of conservancy',
-      description: '🏞️ Preserve, Protect, and Belong. Claim one acre of protected Maasai conservancy as a symbol of your warrior commitment.',
-      imgSrc: 'https://www.shutterstock.com/shutterstock/photos/77553103/display_1500/stock-photo-landscape-of-samburu-before-storm-samburu-kenya-77553103.jpg',
-      alt: 'Conservancy Land',
+      title: "One acre of conservancy",
+      description:
+        "🏞️ Preserve, Protect, and Belong. Claim one acre of protected Maasai conservancy as a symbol of your warrior commitment.",
+      imgSrc:
+        "https://images.pexels.com/photos/235985/pexels-photo-235985.jpeg?auto=compress&cs=tinysrgb&w=150",
+      alt: "Conservancy Land"
     },
     {
-      title: 'Limited Spots Available',
-      description: '⚡ Scarcity Makes Legends—Secure Your Title! Only a select number of honorary warrior titles are awarded.',
-      imgSrc: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSCuj2QLuT0IvU81EtHqUT-jvwv-uWuzGEjCg&s',
-      alt: 'Limited Spots',
+      title: "Limited Spots Available",
+      description:
+        "⚡ Scarcity Makes Legends—Secure Your Title! Only a select number of honorary warrior titles are awarded.",
+      imgSrc:
+        "https://images.pexels.com/photos/207983/pexels-photo-207983.jpeg?auto=compress&cs=tinysrgb&w=150",
+      alt: "Limited Spots"
     },
     {
-      title: 'Wooden Warrior Certificate 🏆',
-      description: '🔥 Honor. Legacy. Authenticity. 🔥 Receive a handcrafted wooden certificate symbolizing your official recognition.',
-      imgSrc: 'https://www.shutterstock.com/shutterstock/photos/297531665/display_1500/stock-photo-close-up-of-person-hands-using-stamper-on-document-with-the-text-approved-297531665.jpg',
-      alt: 'Wooden Certificate',
+      title: "Wooden Warrior Certificate 🏆",
+      description:
+        "🔥 Honor. Legacy. Authenticity. 🔥 Receive a handcrafted wooden certificate symbolizing your official recognition.",
+      imgSrc:
+        "https://images.pexels.com/photos/534172/pexels-photo-534172.jpeg?auto=compress&cs=tinysrgb&w=150",
+      alt: "Wooden Warrior Certificate"
     }
   ];
 
@@ -120,8 +131,8 @@ function BecomeWarrior() {
           >
             <img
               src={benefit.imgSrc}
-              alt={benefit.title}
-              className="w-full h-48 object-cover rounded-md mb-4"
+              alt={benefit.alt || benefit.title}
+              className="w-full h-48 object-cover rounded-md mb-4 transition-all duration-300 hover:scale-110"
             />
             <h3 className="text-xl font-semibold text-gray-800">
               {benefit.title}
@@ -142,8 +153,10 @@ function BecomeWarrior() {
         {message && (
           <div
             className={`p-4 rounded mb-4 text-center ${
-              message.startsWith("Application sent") ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-            }`}
+              message.startsWith("Application sent")
+                ? "bg-green-100 text-green-800"
+                : "bg-red-100 text-red-800"
+            } transition-all duration-300`}
           >
             {message}
           </div>
@@ -157,9 +170,10 @@ function BecomeWarrior() {
             <input
               type="text"
               name="fullName"
+              placeholder="Enter your full name"
               value={formData.fullName}
               onChange={handleChange}
-              className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-300"
+              className="mt-2 block w-full bg-gray-50 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-300 hover:border-indigo-400"
               required
             />
           </div>
@@ -170,9 +184,10 @@ function BecomeWarrior() {
             <input
               type="email"
               name="email"
+              placeholder="you@example.com"
               value={formData.email}
               onChange={handleChange}
-              className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-300"
+              className="mt-2 block w-full bg-gray-50 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-300 hover:border-indigo-400"
               required
             />
           </div>
@@ -183,9 +198,10 @@ function BecomeWarrior() {
             <input
               type="date"
               name="dob"
+              placeholder="Select your birth date"
               value={formData.dob}
               onChange={handleChange}
-              className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-300"
+              className="mt-2 block w-full bg-gray-50 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-300 hover:border-indigo-400"
               required
             />
           </div>
@@ -196,9 +212,10 @@ function BecomeWarrior() {
             <input
               type="text"
               name="phone"
+              placeholder="Enter your phone number"
               value={formData.phone}
               onChange={handleChange}
-              className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-300"
+              className="mt-2 block w-full bg-gray-50 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-300 hover:border-indigo-400"
               required
             />
           </div>
@@ -208,10 +225,11 @@ function BecomeWarrior() {
             </label>
             <textarea
               name="reason"
+              placeholder="Tell us why you want to become a Maasai Warrior"
               value={formData.reason}
               onChange={handleChange}
               rows="4"
-              className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-300"
+              className="mt-2 block w-full bg-gray-50 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-300 hover:border-indigo-400"
               required
             ></textarea>
           </div>
