@@ -1,4 +1,11 @@
 import React, { useState } from "react";
+import woodencertificate from "../assets/woodencertificate.jpeg";
+import limitedspots from '../assets/limitedspots.jpeg';
+import certificate from '../assets/certificate.jpeg';
+import conservancy from '../assets/conservancy.jpg';
+import squareinch from '../assets/square inch.jpeg';
+import discounts from '../assets/discounts.jpeg'
+
 
 function BecomeWarrior() {
   const benefits = [
@@ -6,48 +13,42 @@ function BecomeWarrior() {
       title: "Official Maasai Warrior Certificate",
       description:
         "📜 Earn a prestigious certificate officially recognized by the Maasai community, symbolizing your warrior status.",
-      imgSrc:
-        "https://images.pexels.com/photos/669615/pexels-photo-669615.jpeg?auto=compress&cs=tinysrgb&w=150",
+      imgSrc: certificate,
       alt: "Maasai Warrior Certificate"
     },
     {
       title: "A square inch of land",
       description:
         "🌍 Own a Piece of Maasai Heritage. Secure a symbolic stake in Maasai land, representing your dedication to cultural preservation and conservation efforts. Immerse yourself in authentic warrior traditions through exclusive access to sacred ceremonies.",
-      imgSrc:
-        "https://images.pexels.com/photos/364248/pexels-photo-364248.jpeg?auto=compress&cs=tinysrgb&w=150",
+      imgSrc: squareinch,
       alt: "Square Inch of Land"
     },
     {
       title: "Special Merchandise Discounts 🛍️",
       description:
         "🔥 Exclusive Warrior Gear & Handcrafted Artifacts 🔥. Gain privileged access to authentic Maasai warrior merchandise. Enjoy special discounts as part of this elite community.",
-      imgSrc:
-        "https://images.pexels.com/photos/267320/pexels-photo-267320.jpeg?auto=compress&cs=tinysrgb&w=150",
+      imgSrc: discounts,
       alt: "Merchandise Discounts"
     },
     {
       title: "One acre of conservancy",
       description:
         "🏞️ Preserve, Protect, and Belong. Claim one acre of protected Maasai conservancy as a symbol of your warrior commitment.",
-      imgSrc:
-        "https://images.pexels.com/photos/235985/pexels-photo-235985.jpeg?auto=compress&cs=tinysrgb&w=150",
+      imgSrc: conservancy,
       alt: "Conservancy Land"
     },
     {
       title: "Limited Spots Available",
       description:
         "⚡ Scarcity Makes Legends—Secure Your Title! Only a select number of honorary warrior titles are awarded.",
-      imgSrc:
-        "https://images.pexels.com/photos/207983/pexels-photo-207983.jpeg?auto=compress&cs=tinysrgb&w=150",
+      imgSrc: limitedspots,
       alt: "Limited Spots"
     },
     {
       title: "Wooden Warrior Certificate 🏆",
       description:
         "🔥 Honor. Legacy. Authenticity. 🔥 Receive a handcrafted wooden certificate symbolizing your official recognition.",
-      imgSrc:
-        "https://images.pexels.com/photos/534172/pexels-photo-534172.jpeg?auto=compress&cs=tinysrgb&w=150",
+      imgSrc: woodencertificate,
       alt: "Wooden Warrior Certificate"
     }
   ];
@@ -113,50 +114,52 @@ function BecomeWarrior() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-6 py-12">
+    <div className="bg-gradient-to-br from-gray-900 to-gray-800 min-h-screen px-6 py-12">
       <header className="text-center mb-12">
-        <h1 className="text-5xl font-bold text-indigo-700">
+        <h1 className="text-5xl font-bold bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">
           🌍 Become a Maasai Warrior
         </h1>
-        <p className="text-lg text-gray-700 mt-4">
+        <p className="text-lg text-gray-300 mt-4">
           Step into the legacy—embrace the spirit, culture, and strength of the Maasai warriors!
         </p>
       </header>
 
+      {/* Benefits Section */}
       <section className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {benefits.map((benefit, index) => (
           <div
             key={index}
-            className="bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition duration-300"
+            className="bg-gray-800 p-6 rounded-lg shadow-lg hover:shadow-2xl transition duration-300"
           >
             <img
               src={benefit.imgSrc}
               alt={benefit.alt || benefit.title}
-              className="w-full h-48 object-cover rounded-md mb-4 transition-all duration-300 hover:scale-110"
+              className="w-full h-48 object-cover rounded-md mb-4 transition-transform duration-300 transform hover:scale-105"
             />
-            <h3 className="text-xl font-semibold text-gray-800">
+            <h3 className="text-xl font-semibold bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">
               {benefit.title}
             </h3>
-            <p className="text-gray-600 mt-2">{benefit.description}</p>
+            <p className="text-gray-300 mt-2">{benefit.description}</p>
           </div>
         ))}
       </section>
 
-      <section className="mt-16 max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-xl">
-        <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
+      {/* Application Form Section */}
+      <section className="mt-16 max-w-3xl mx-auto bg-gray-800 p-8 rounded-lg shadow-xl">
+        <h2 className="text-3xl font-bold text-center bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent mb-6">
           🏹 Warrior Application
         </h2>
-        <p className="text-lg text-center text-gray-600 mb-6">
+        <p className="text-lg text-center text-gray-300 mb-6">
           Secure your honorary warrior title today!
         </p>
 
         {message && (
           <div
-            className={`p-4 rounded mb-4 text-center ${
+            className={`p-4 rounded mb-4 text-center transition-all duration-300 ${
               message.startsWith("Application sent")
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-800"
-            } transition-all duration-300`}
+                ? "bg-green-800 text-green-200"
+                : "bg-red-800 text-red-200"
+            }`}
           >
             {message}
           </div>
@@ -164,7 +167,7 @@ function BecomeWarrior() {
 
         <form className="space-y-6" onSubmit={handleSubmit}>
           <div>
-            <label className="block text-lg font-medium text-gray-700">
+            <label className="block text-lg font-medium text-gray-300">
               Full Name
             </label>
             <input
@@ -173,12 +176,12 @@ function BecomeWarrior() {
               placeholder="Enter your full name"
               value={formData.fullName}
               onChange={handleChange}
-              className="mt-2 block w-full bg-gray-50 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-300 hover:border-indigo-400"
+              className="mt-2 block w-full bg-gray-700 text-gray-100 rounded-md border border-gray-600 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-500 transition duration-300 hover:border-amber-400"
               required
             />
           </div>
           <div>
-            <label className="block text-lg font-medium text-gray-700">
+            <label className="block text-lg font-medium text-gray-300">
               Email
             </label>
             <input
@@ -187,12 +190,12 @@ function BecomeWarrior() {
               placeholder="you@example.com"
               value={formData.email}
               onChange={handleChange}
-              className="mt-2 block w-full bg-gray-50 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-300 hover:border-indigo-400"
+              className="mt-2 block w-full bg-gray-700 text-gray-100 rounded-md border border-gray-600 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-500 transition duration-300 hover:border-amber-400"
               required
             />
           </div>
           <div>
-            <label className="block text-lg font-medium text-gray-700">
+            <label className="block text-lg font-medium text-gray-300">
               Date of Birth
             </label>
             <input
@@ -201,12 +204,12 @@ function BecomeWarrior() {
               placeholder="Select your birth date"
               value={formData.dob}
               onChange={handleChange}
-              className="mt-2 block w-full bg-gray-50 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-300 hover:border-indigo-400"
+              className="mt-2 block w-full bg-gray-700 text-gray-100 rounded-md border border-gray-600 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-500 transition duration-300 hover:border-amber-400"
               required
             />
           </div>
           <div>
-            <label className="block text-lg font-medium text-gray-700">
+            <label className="block text-lg font-medium text-gray-300">
               Phone Number
             </label>
             <input
@@ -215,12 +218,12 @@ function BecomeWarrior() {
               placeholder="Enter your phone number"
               value={formData.phone}
               onChange={handleChange}
-              className="mt-2 block w-full bg-gray-50 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-300 hover:border-indigo-400"
+              className="mt-2 block w-full bg-gray-700 text-gray-100 rounded-md border border-gray-600 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-500 transition duration-300 hover:border-amber-400"
               required
             />
           </div>
           <div>
-            <label className="block text-lg font-medium text-gray-700">
+            <label className="block text-lg font-medium text-gray-300">
               Why do you want to become a Maasai Warrior?
             </label>
             <textarea
@@ -229,13 +232,13 @@ function BecomeWarrior() {
               value={formData.reason}
               onChange={handleChange}
               rows="4"
-              className="mt-2 block w-full bg-gray-50 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 transition duration-300 hover:border-indigo-400"
+              className="mt-2 block w-full bg-gray-700 text-gray-100 rounded-md border border-gray-600 shadow-sm focus:border-amber-500 focus:ring focus:ring-amber-500 transition duration-300 hover:border-amber-400"
               required
             ></textarea>
           </div>
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-3 px-4 rounded-md hover:bg-indigo-700 transition duration-300"
+            className="w-full bg-amber-500 text-gray-900 py-3 px-4 rounded-md hover:bg-amber-600 transition duration-300"
           >
             Submit Application
           </button>

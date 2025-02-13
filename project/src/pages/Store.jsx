@@ -7,39 +7,36 @@ const Store = () => {
   const { addToCart } = useCart();
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/product')
-      .then(response => setProducts(response.data.products))
-      .catch(error => console.error('Error fetching products:', error));
+    axios
+      .get('http://localhost:5000/api/product')
+      .then((response) => setProducts(response.data.products))
+      .catch((error) => console.error('Error fetching products:', error));
   }, []);
 
   return (
-    <div className="max-w-7xl mx-auto p-8">
-      <h1 className="text-3xl font-bold mb-6 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent transition-all duration-300 hover:scale-105">
+    <div className="max-w-7xl mx-auto p-8 bg-gradient-to-br from-gray-900 to-gray-800 min-h-screen">
+      <h1 className="text-4xl font-extrabold mb-8 text-center bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent transition-all duration-300 hover:scale-105">
         Store
       </h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {products.map(product => (
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {products.map((product) => (
           <div
             key={product.id}
-            className="border p-4 rounded-lg bg-white shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-xl"
+            className="border border-gray-700 p-6 rounded-lg bg-gray-800 shadow-lg transform transition-all duration-300 hover:scale-105 hover:shadow-2xl"
           >
             <img
               src={product.image_url}
               alt={product.name}
-              className="w-full h-48 object-cover mb-4 rounded-lg transition-all duration-300 hover:scale-105"
+              className="w-full h-56 object-cover mb-4 rounded-lg transition-transform duration-300 hover:scale-105"
             />
-            <h2 className="text-xl font-bold text-indigo-800">
-              {product.name}
-            </h2>
-            <p className="text-2xl font-extrabold text-green-600 my-2">
+            <h2 className="text-xl font-bold text-gray-100">{product.name}</h2>
+            <p className="text-2xl font-extrabold text-amber-400 my-2">
               ${product.price}
             </p>
-            <p className="mt-2 text-gray-600 text-justify">
-              {product.description}
-            </p>
+            <p className="mt-2 text-gray-300 text-justify">{product.description}</p>
             <button
               onClick={() => addToCart(product)}
-              className="mt-4 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition duration-300"
+              className="mt-4 bg-amber-500 text-gray-900 px-4 py-2 rounded-lg hover:bg-amber-600 transition duration-300"
             >
               Add to Cart
             </button>

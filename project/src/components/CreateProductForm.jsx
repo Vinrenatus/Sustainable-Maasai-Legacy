@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createProduct } from '../api/product';
+import axios from 'axios';
 
 const CreateProductForm = () => {
   const [name, setName] = useState('');
@@ -17,7 +17,9 @@ const CreateProductForm = () => {
         description, 
         image_url: imageUrl 
       };
-      await createProduct(productData);
+      await axios.post('http://localhost:5000/api/product', productData, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
       setMessage('Product created successfully!');
       setName('');
       setPrice('');

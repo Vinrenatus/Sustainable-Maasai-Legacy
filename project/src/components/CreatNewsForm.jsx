@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { createNews } from '../api/news';
+import axios from 'axios';
 
 const CreateNewsForm = () => {
   const [title, setTitle] = useState('');
@@ -11,7 +11,9 @@ const CreateNewsForm = () => {
     e.preventDefault();
     try {
       const newsData = { title, content, image_url: imageUrl };
-      await createNews(newsData);
+      await axios.post('http://localhost:5000/api/news', newsData, {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      });
       setMessage('News created successfully!');
       setTitle('');
       setContent('');

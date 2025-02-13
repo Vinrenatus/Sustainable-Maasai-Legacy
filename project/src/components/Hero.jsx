@@ -1,23 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import logo from '../assets/logo.png';
+import bonefire from '../assets/bonefire.jpeg'
+import grouphoto1 from '../assets/grouphoto1.jpeg'
+import adventure13 from '../assets/adventure13.jpg'
+import skyselfie from '../assets/skyselfie.jpeg'
+import adventure from '../assets/adventure.jpeg'
+import adventure9 from '../assets/adventure9.jpg'
+import adventure7 from '../assets/adventure7.jpg'
+import groupphoto4 from '../assets/groupphoto4.jpeg'
+import adventure10 from '../assets/adventure10.jpeg'
+
+
+
 
 const images = [
-  'https://images.pexels.com/photos/13033128/pexels-photo-13033128.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'https://images.pexels.com/photos/667200/pexels-photo-667200.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'https://images.pexels.com/photos/2343011/pexels-photo-2343011.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  'https://images.pexels.com/photos/8628442/pexels-photo-8628442.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  'https://images.pexels.com/photos/28571474/pexels-photo-28571474/free-photo-of-leopard-climbing-a-tree-at-sunset-in-maasai-mara.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1',
-  'https://images.pexels.com/photos/13033075/pexels-photo-13033075.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'https://images.pexels.com/photos/4314682/pexels-photo-4314682.jpeg?auto=compress&cs=tinysrgb&w=600',
-  'https://www.shutterstock.com/shutterstock/photos/2360659795/display_1500/stock-photo-olare-motorogi-conservancy-kenya-march-interior-of-a-luxury-lodge-2360659795.jpg',
-  'https://www.shutterstock.com/shutterstock/photos/320420561/display_1500/stock-photo-masai-mara-kenya-january-the-picture-painted-colors-maasai-obstraktsiya-in-the-gift-shop-for-320420561.jpg'
+  grouphoto1,
+  adventure9,
+  bonefire,
+  adventure10,
+  adventure,
+  adventure13,
+  adventure7
 ];
 
 const Hero = () => {
-  const [currentImage, setCurrentImage] = useState(0);
+  const [currentImage, setCurrentImage] = React.useState(0);
   const navigate = useNavigate();
 
-  useEffect(() => {
+  React.useEffect(() => {
     const interval = setInterval(() => {
       setCurrentImage((prev) => (prev + 1) % images.length);
     }, 4000);
@@ -25,38 +36,33 @@ const Hero = () => {
   }, []);
 
   return (
-    <div className="relative h-[80vh]">
-      {/* Background image with hover effects for a slight zoom and brightness change */}
+    <div className="relative h-[80vh] overflow-hidden">
+      {/* Background Image Slider */}
       <div
-        className="absolute inset-0 bg-cover bg-center transition-all duration-1000 hover:scale-105 hover:brightness-110"
+        className="absolute inset-0 bg-cover bg-center transition-all duration-1000 transform hover:scale-105 hover:brightness-110"
         style={{ backgroundImage: `url(${images[currentImage]})` }}
       >
+        {/* Dark Overlay for Enhanced Readability */}
         <div className="absolute inset-0 bg-black bg-opacity-50"></div>
       </div>
-      <div className="relative h-full flex items-center justify-center text-center px-4">
+      
+      {/* Hero Content */}
+      <div className="relative z-10 h-full flex items-center justify-center text-center px-4">
         <div className="max-w-3xl">
-          <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
+          <h1 className="text-4xl md:text-6xl font-extrabold mb-6 uppercase tracking-wider bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">
             Sustainable Maasai Legacy
           </h1>
-          <p className="text-xl text-white mb-8">
+          <p className="text-xl md:text-2xl text-gray-300 mb-8">
             Discover handcrafted treasures that preserve culture and support sustainable artistry
           </p>
-
-          {/* Sign-up or Login Message with Red Background */}
-          <div className="mb-6 text-white bg-red-600 p-4 rounded-md transition-all hover:bg-red-700 hover:scale-105">
-            <p className="text-lg font-semibold">
-              Sign up or log in to enable purchases and explore more!
-            </p>
+          <div className="flex flex-wrap justify-center gap-4">
+            <button
+              onClick={() => navigate('/signup')}
+              className="bg-gradient-to-r from-amber-500 to-amber-400 text-black px-8 py-3 rounded-full shadow-lg transition-all duration-500 transform hover:scale-105 hover:from-amber-600 hover:to-amber-500"
+            >
+              Join Us
+            </button>
           </div>
-
-          <button
-            onClick={() => navigate('/signup')}
-            className="bg-stone-800 text-white px-8 py-3 rounded-md transition-all hover:bg-stone-700 hover:scale-105"
-          >
-            Join Us
-          </button>
-
-        
         </div>
       </div>
     </div>

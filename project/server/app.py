@@ -1,6 +1,8 @@
 import uuid
 import logging
 import os
+import requests
+from requests_oauthlib import OAuth1
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 from flask_restful import Api, Resource, reqparse
@@ -11,10 +13,6 @@ from config import Config
 from extensions import db
 from models import User, News, ContactMessage, WarriorApplication, Product
 from decorators import admin_required
-
-# Additional imports for Pesapal integration
-import requests
-from requests_oauthlib import OAuth1
 
 # Load environment variables
 load_dotenv()
@@ -261,9 +259,11 @@ class ProductResource(Resource):
             return {"error": "Internal Server Error"}, 500
 
 # ------------------------------
-# Live Pesapal Checkout Integration
+# Pesapal Checkout Integration (Sandbox)
 # ------------------------------
-
+# ------------------------------
+# Pesapal Checkout Integration (Sandbox)
+# ------------------------------
 class CheckoutResource(Resource):
     def options(self):
         return {}, 200
@@ -274,41 +274,93 @@ class CheckoutResource(Resource):
         if total is None:
             return {"message": "Invalid checkout data"}, 400
 
-        # Generate a unique reference for the order
+        # Generate a unique merchant reference for the order
         reference = str(uuid.uuid4())
 
-        # Prepare order data as required by Pesapal
+        # ------------------------------
+        # Step 1: Get Pesapal Access Token
+        # ------------------------------
+        auth_url = f"{app.config.get('PESAPAL_BASE_URL')}/api/Auth/RequestToken"
+        auth_payload = {
+            "consumer_key": app.config.get("PESAPAL_CONSUMER_KEY"),
+            "consumer_secret": app.config.get("PESAPAL_CONSUMER_SECRET")
+        }
+        auth_headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        }
+        try:
+            auth_response = requests.post(auth_url, json=auth_payload, headers=auth_headers)
+            if auth_response.status_code != 200:
+                app.logger.error("Pesapal Auth Error: %s", auth_response.text)
+                return {"error": "Pesapal Authentication Failed"}, 500
+            auth_data = auth_response.json()
+            # Check for token under both possible keys.
+            access_token = auth_data.get("token") or auth_data.get("access_token")
+            if not access_token:
+                app.logger.error("Pesapal Auth Error: No token returned. Full response: %s", auth_response.text)
+                return {"error": "Pesapal Authentication Failed"}, 500
+        except Exception as e:
+            app.logger.error("Pesapal Auth Exception: %s", str(e), exc_info=True)
+            return {"error": "Pesapal Authentication Exception"}, 500
+
+        # ------------------------------
+        # Step 2: Prepare Order Data for SubmitOrderRequest
+        # ------------------------------
         order_data = {
-            "amount": total,
-            "currency": "USD",  # Change if necessary
+            "id": reference,
+            "currency": "USD",  # Update this if needed
+            "amount": float(total),
             "description": "Purchase from Maasai Legacy",
-            "type": "MERCHANT",
-            "reference": reference,
-            "callback_url": app.config.get("PESAPAL_CALLBACK_URL")
+            "callback_url": app.config.get("PESAPAL_CALLBACK_URL"),
+            "notification_id": app.config.get("PESAPAL_NOTIFICATION_ID"),
+            "redirect_mode": "TOP_WINDOW",
+            "billing_address": {
+                "email_address": "customer@example.com",
+                "phone_number": "0712345678",
+                "country_code": "KE",
+                "first_name": "Customer",
+                "middle_name": "",
+                "last_name": "Test",
+                "line_1": "Street 123",
+                "line_2": "",
+                "city": "Nairobi",
+                "state": "",
+                "postal_code": "",
+                "zip_code": ""
+            }
         }
 
-        # Pesapal live endpoint
-        pesapal_url = "https://www.pesapal.com/API/PostPesapalDirectOrderV4"
-
-        # Setup OAuth1 credentials using Pesapal consumer key and secret
-        oauth = OAuth1(
-            client_key=app.config.get("PESAPAL_CONSUMER_KEY"),
-            client_secret=app.config.get("PESAPAL_CONSUMER_SECRET"),
-            signature_method='HMAC-SHA1'
-        )
-
+        # ------------------------------
+        # Step 3: Submit Order Request to Pesapal
+        # ------------------------------
+        submit_url = f"{app.config.get('PESAPAL_BASE_URL')}/api/Transactions/SubmitOrderRequest"
+        submit_headers = {
+            "Accept": "application/json",
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {access_token}"
+        }
         try:
-            response = requests.post(pesapal_url, data=order_data, auth=oauth)
-            if response.status_code == 200:
-                redirect_url = response.text.strip()
-                return {"redirectUrl": redirect_url}, 200
+            submit_response = requests.post(submit_url, json=order_data, headers=submit_headers)
+            if submit_response.status_code == 200:
+                submit_data = submit_response.json()
+                redirect_url = submit_data.get("redirect_url")
+                if redirect_url:
+                    # Return the redirect URL for the frontend to send the customer to Pesapal’s payment page
+                    return {"redirectUrl": redirect_url}, 200
+                else:
+                    app.logger.error("Pesapal SubmitOrderRequest Error: %s", submit_response.text)
+                    return {"error": "Pesapal Order Submission Failed"}, 500
             else:
-                app.logger.error("Pesapal Checkout Error: %s", response.text)
-                return {"error": "Pesapal Checkout Error"}, 500
+                app.logger.error("Pesapal SubmitOrderRequest Error: %s", submit_response.text)
+                return {"error": "Pesapal Order Submission Failed"}, 500
         except Exception as e:
-            app.logger.error("Pesapal Exception: %s", str(e), exc_info=True)
-            return {"error": "Pesapal Checkout Exception"}, 500
+            app.logger.error("Pesapal SubmitOrderRequest Exception: %s", str(e), exc_info=True)
+            return {"error": "Pesapal Order Submission Exception"}, 500
 
+# ------------------------------
+# Admin Dashboard Resource
+# ------------------------------
 class AdminDashboardResource(Resource):
     @admin_required
     def get(self):
@@ -348,9 +400,8 @@ class AdminDashboardResource(Resource):
             return {"error": "Internal Server Error"}, 500
 
 # ------------------------------
-# New Contact Resource
+# Contact Resource
 # ------------------------------
-
 class ContactResource(Resource):
     def options(self):
         return {}, 200
@@ -376,7 +427,7 @@ api.add_resource(ProductResource, "/api/product", "/api/product/<int:product_id>
 api.add_resource(CheckoutResource, "/api/checkout")
 api.add_resource(NewsResource, "/api/news", "/api/news/<int:news_id>")
 api.add_resource(AdminDashboardResource, "/api/admin/dashboard")
-api.add_resource(ContactResource, "/api/contact")  # New Contact endpoint
+api.add_resource(ContactResource, "/api/contact")
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=5000)
