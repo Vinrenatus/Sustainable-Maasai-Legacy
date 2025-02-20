@@ -1,34 +1,50 @@
-from extensions import db
-from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from flask_sqlalchemy import SQLAlchemy
+from werkzeug.security import generate_password_hash, check_password_hash
+
+# Import the db instance from extensions.py
+from extensions import db
 
 class User(db.Model):
+    """
+    Represents a user in the system.
+    """
     __tablename__ = "users"
+
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(100), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(128), nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
     role = db.Column(db.String(50), nullable=False, default="user")
 
     def set_password(self, password):
+        """Hash and store the user's password."""
         self.password_hash = generate_password_hash(password)
 
     def check_password(self, password):
+        """Check if the provided password matches the stored hash."""
         return check_password_hash(self.password_hash, password)
 
+
 class News(db.Model):
+    """
+    Represents a news article.
+    """
     __tablename__ = "news"
+
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     content = db.Column(db.Text, nullable=False)
     image_url = db.Column(db.String(500), nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-    def __repr__(self):
-        return f"<News {self.title}>"
 
 class ContactMessage(db.Model):
-    __tablename__ = 'contact_messages'
+    """
+    Represents a contact message submitted by users.
+    """
+    __tablename__ = "contact_messages"
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(120), nullable=False)
@@ -36,11 +52,13 @@ class ContactMessage(db.Model):
     message = db.Column(db.Text, nullable=False)
     submitted_at = db.Column(db.DateTime, server_default=db.func.current_timestamp())
 
-    def __repr__(self):
-        return f"<ContactMessage from {self.name}, Subject: {self.subject}>"
 
 class WarriorApplication(db.Model):
-    __tablename__ = 'warrior_applications'
+    """
+    Represents an application to become a Maasai warrior.
+    """
+    __tablename__ = "warrior_applications"
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     age = db.Column(db.Integer, nullable=False)
@@ -48,11 +66,13 @@ class WarriorApplication(db.Model):
     phone = db.Column(db.String(20), unique=True, nullable=False)
     reason = db.Column(db.Text, nullable=False)
 
-    def __repr__(self):
-        return f"<WarriorApplication {self.name}, Age: {self.age}>"
 
 class Product(db.Model):
-    __tablename__ = 'products'
+    """
+    Represents a product available for purchase.
+    """
+    __tablename__ = "products"
+
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), unique=True, nullable=False)
     price = db.Column(db.Float, nullable=False)
@@ -60,5 +80,16 @@ class Product(db.Model):
     image_url = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, server_default=db.func.current_timestamp())
 
-    def __repr__(self):
-        return f"<Product {self.name}, Price: {self.price}>"
+
+class Order(db.Model):
+    """
+    Represents an order placed by a user.
+    """
+    __tablename__ = "orders"
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)  # Link to the User model
+    items = db.Column(db.JSON, nullable=False)  # Store cart items as JSON
+    total_amount = db.Column(db.Float, nullable=False)
+    status = db.Column(db.String(50), default="processing")  # Options: processing, completed, canceled
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)

@@ -11,14 +11,20 @@ from flask_cors import CORS
 from flask_migrate import Migrate
 from config import Config
 from extensions import db
-from models import User, News, ContactMessage, WarriorApplication, Product
+from models import User, News, ContactMessage, WarriorApplication, Product, Order
 from decorators import admin_required
 
 # Load environment variables
 load_dotenv()
 
+# Initialize Flask app
 app = Flask(__name__)
 app.config.from_object(Config)
+
+# Configure Pesapal credentials
+PESAPAL_CONSUMER_KEY = os.getenv("PESAPAL_CONSUMER_KEY", "2EYi8Qt2PS2F0n8CwsB5Ere6vYtisZJl")
+PESAPAL_CONSUMER_SECRET = os.getenv("PESAPAL_CONSUMER_SECRET", "NuDfwSxa16CojrAmpj5cCxS8lDA=")
+PESAPAL_BASE_URL = os.getenv("PESAPAL_BASE_URL", "https://cybqa.pesapal.com/pesapalv3")
 
 # Enable CORS for all API routes
 CORS(app, resources={r"/api/*": {"origins": "*"}})
@@ -36,9 +42,11 @@ migrate = Migrate(app, db)
 api = Api(app)
 jwt = JWTManager(app)
 
+
 # ------------------------------
 # Request Parsers
 # ------------------------------
+
 warrior_parser = reqparse.RequestParser()
 warrior_parser.add_argument("name", type=str, required=True, help="Name is required")
 warrior_parser.add_argument("age", type=int, required=True, help="Age is required")
@@ -67,6 +75,7 @@ contact_parser.add_argument("email", type=str, required=True, help="Email is req
 contact_parser.add_argument("subject", type=str, required=True, help="Subject is required")
 contact_parser.add_argument("message", type=str, required=True, help="Message is required")
 
+
 # ------------------------------
 # Resources
 # ------------------------------
@@ -85,6 +94,7 @@ class WarriorApplicationResource(Resource):
         except Exception as e:
             app.logger.error("Database Error: %s", str(e), exc_info=True)
             return {"error": "Internal Server Error"}, 500
+
 
 class UserRegister(Resource):
     def options(self):
@@ -106,6 +116,7 @@ class UserRegister(Resource):
             app.logger.error("Error registering user: %s", str(e), exc_info=True)
             return {"error": "Internal Server Error"}, 500
 
+
 class UserLogin(Resource):
     def options(self):
         return {}, 200
@@ -117,6 +128,7 @@ class UserLogin(Resource):
             return {"message": "Invalid credentials"}, 401
         access_token = create_access_token(identity={"id": user.id, "role": user.role})
         return {"access_token": access_token}, 200
+
 
 class NewsResource(Resource):
     def options(self, news_id=None):
@@ -138,13 +150,15 @@ class NewsResource(Resource):
 
             news_list = News.query.all()
             return {
-                "news": [{
-                    "id": n.id,
-                    "title": n.title,
-                    "content": n.content,
-                    "image_url": n.image_url,
-                    "created_at": n.created_at.strftime("%Y-%m-%d %H:%M:%S")
-                } for n in news_list]
+                "news": [
+                    {
+                        "id": n.id,
+                        "title": n.title,
+                        "content": n.content,
+                        "image_url": n.image_url,
+                        "created_at": n.created_at.strftime("%Y-%m-%d %H:%M:%S")
+                    } for n in news_list
+                ]
             }, 200
         except Exception as e:
             app.logger.error("Error fetching news: %s", str(e), exc_info=True)
@@ -203,6 +217,7 @@ class NewsResource(Resource):
             app.logger.error("Error deleting news: %s", str(e), exc_info=True)
             return {"error": "Internal Server Error"}, 500
 
+
 class ProductResource(Resource):
     def options(self):
         return {}, 200
@@ -210,7 +225,15 @@ class ProductResource(Resource):
     def get(self):
         try:
             products = Product.query.all()
-            result = [{"id": p.id, "name": p.name, "price": p.price, "description": p.description, "image_url": p.image_url} for p in products]
+            result = [
+                {
+                    "id": p.id,
+                    "name": p.name,
+                    "price": p.price,
+                    "description": p.description,
+                    "image_url": p.image_url
+                } for p in products
+            ]
             return {"products": result}, 200
         except Exception as e:
             app.logger.error("Error fetching products: %s", str(e), exc_info=True)
@@ -258,32 +281,26 @@ class ProductResource(Resource):
             app.logger.error("Error deleting product: %s", str(e), exc_info=True)
             return {"error": "Internal Server Error"}, 500
 
-# ------------------------------
-# Pesapal Checkout Integration (Sandbox)
-# ------------------------------
-# ------------------------------
-# Pesapal Checkout Integration (Sandbox)
-# ------------------------------
-class CheckoutResource(Resource):
-    def options(self):
-        return {}, 200
 
+class CheckoutResource(Resource):
+    @jwt_required()
     def post(self):
         data = request.get_json()
         total = data.get("total")
-        if total is None:
+        items = data.get("items")
+
+        # Validate required fields
+        if not total or not isinstance(total, (int, float)) or total <= 0:
             return {"message": "Invalid checkout data"}, 400
 
         # Generate a unique merchant reference for the order
         reference = str(uuid.uuid4())
 
-        # ------------------------------
         # Step 1: Get Pesapal Access Token
-        # ------------------------------
-        auth_url = f"{app.config.get('PESAPAL_BASE_URL')}/api/Auth/RequestToken"
+        auth_url = f"{PESAPAL_BASE_URL}/api/Auth/RequestToken"
         auth_payload = {
-            "consumer_key": app.config.get("PESAPAL_CONSUMER_KEY"),
-            "consumer_secret": app.config.get("PESAPAL_CONSUMER_SECRET")
+            "consumer_key": PESAPAL_CONSUMER_KEY,
+            "consumer_secret": PESAPAL_CONSUMER_SECRET
         }
         auth_headers = {
             "Accept": "application/json",
@@ -295,7 +312,6 @@ class CheckoutResource(Resource):
                 app.logger.error("Pesapal Auth Error: %s", auth_response.text)
                 return {"error": "Pesapal Authentication Failed"}, 500
             auth_data = auth_response.json()
-            # Check for token under both possible keys.
             access_token = auth_data.get("token") or auth_data.get("access_token")
             if not access_token:
                 app.logger.error("Pesapal Auth Error: No token returned. Full response: %s", auth_response.text)
@@ -304,9 +320,7 @@ class CheckoutResource(Resource):
             app.logger.error("Pesapal Auth Exception: %s", str(e), exc_info=True)
             return {"error": "Pesapal Authentication Exception"}, 500
 
-        # ------------------------------
         # Step 2: Prepare Order Data for SubmitOrderRequest
-        # ------------------------------
         order_data = {
             "id": reference,
             "currency": "USD",  # Update this if needed
@@ -331,10 +345,8 @@ class CheckoutResource(Resource):
             }
         }
 
-        # ------------------------------
         # Step 3: Submit Order Request to Pesapal
-        # ------------------------------
-        submit_url = f"{app.config.get('PESAPAL_BASE_URL')}/api/Transactions/SubmitOrderRequest"
+        submit_url = f"{PESAPAL_BASE_URL}/api/Transactions/SubmitOrderRequest"
         submit_headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
@@ -346,7 +358,6 @@ class CheckoutResource(Resource):
                 submit_data = submit_response.json()
                 redirect_url = submit_data.get("redirect_url")
                 if redirect_url:
-                    # Return the redirect URL for the frontend to send the customer to Pesapal’s payment page
                     return {"redirectUrl": redirect_url}, 200
                 else:
                     app.logger.error("Pesapal SubmitOrderRequest Error: %s", submit_response.text)
@@ -358,9 +369,7 @@ class CheckoutResource(Resource):
             app.logger.error("Pesapal SubmitOrderRequest Exception: %s", str(e), exc_info=True)
             return {"error": "Pesapal Order Submission Exception"}, 500
 
-# ------------------------------
-# Admin Dashboard Resource
-# ------------------------------
+
 class AdminDashboardResource(Resource):
     @admin_required
     def get(self):
@@ -368,6 +377,8 @@ class AdminDashboardResource(Resource):
             contacts = ContactMessage.query.all()
             applications = WarriorApplication.query.all()
             users = User.query.all()
+            orders = Order.query.all()
+
             contacts_data = [{
                 "id": c.id,
                 "name": c.name,
@@ -376,6 +387,7 @@ class AdminDashboardResource(Resource):
                 "message": c.message,
                 "submitted_at": c.submitted_at.strftime("%Y-%m-%d %H:%M:%S")
             } for c in contacts]
+
             applications_data = [{
                 "id": a.id,
                 "name": a.name,
@@ -384,24 +396,32 @@ class AdminDashboardResource(Resource):
                 "phone": a.phone,
                 "reason": a.reason
             } for a in applications]
+
             users_data = [{
                 "id": u.id,
                 "username": u.username,
                 "email": u.email,
                 "role": u.role
             } for u in users]
+
+            orders_data = [{
+                "id": o.id,
+                "total_amount": o.total_amount,
+                "status": o.status,
+                "created_at": o.created_at.strftime("%Y-%m-%d %H:%M:%S")
+            } for o in orders]
+
             return {
                 "contacts": contacts_data,
                 "applications": applications_data,
-                "users": users_data
+                "users": users_data,
+                "orders": orders_data
             }, 200
         except Exception as e:
             app.logger.error("Error fetching admin dashboard data: %s", str(e), exc_info=True)
             return {"error": "Internal Server Error"}, 500
 
-# ------------------------------
-# Contact Resource
-# ------------------------------
+
 class ContactResource(Resource):
     def options(self):
         return {}, 200
@@ -416,6 +436,7 @@ class ContactResource(Resource):
         except Exception as e:
             app.logger.error("Error submitting contact message: %s", str(e), exc_info=True)
             return {"error": "Internal Server Error"}, 500
+
 
 # ------------------------------
 # Endpoint Registrations
