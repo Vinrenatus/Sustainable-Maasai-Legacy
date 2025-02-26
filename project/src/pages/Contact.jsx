@@ -46,12 +46,6 @@ function Contact() {
       image: ceo,
       description: 'Community Manager',
       message: 'Connecting cultures and communities.'
-    },
-    {
-      name: 'Esther',
-      image: ceo3,
-      description: 'Operations Lead',
-      message: 'Ensuring smooth operations at every step.'
     }
   ];
 

@@ -1,18 +1,14 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import logo from '../assets/logo.png';
-import bonefire from '../assets/bonefire.jpeg'
-import grouphoto1 from '../assets/grouphoto1.jpeg'
-import adventure13 from '../assets/adventure13.jpg'
-import skyselfie from '../assets/skyselfie.jpeg'
-import adventure from '../assets/adventure.jpeg'
-import adventure9 from '../assets/adventure9.jpg'
-import adventure7 from '../assets/adventure7.jpg'
-import groupphoto4 from '../assets/groupphoto4.jpeg'
-import adventure10 from '../assets/adventure10.jpeg'
-
-
-
+import bonefire from '../assets/bonefire.jpeg';
+import grouphoto1 from '../assets/grouphoto1.jpeg';
+import adventure13 from '../assets/adventure13.jpg';
+import skyselfie from '../assets/skyselfie.jpeg';
+import adventure from '../assets/adventure.jpeg';
+import adventure9 from '../assets/adventure9.jpg';
+import adventure7 from '../assets/adventure7.jpg';
+import groupphoto4 from '../assets/groupphoto4.jpeg';
+import adventure10 from '../assets/adventure10.jpeg';
 
 const images = [
   grouphoto1,
@@ -21,31 +17,48 @@ const images = [
   adventure10,
   adventure,
   adventure13,
-  adventure7
+  adventure7,
 ];
 
 const Hero = () => {
-  const [currentImage, setCurrentImage] = React.useState(0);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const navigate = useNavigate();
 
-  React.useEffect(() => {
+  // Automatically switch images every 4 seconds
+  useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % images.length);
-    }, 4000);
+      setCurrentImageIndex((prev) => (prev + 1) % images.length);
+    }, 3600);
+
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="relative h-[80vh] overflow-hidden">
       {/* Background Image Slider */}
-      <div
-        className="absolute inset-0 bg-cover bg-center transition-all duration-1000 transform hover:scale-105 hover:brightness-110"
-        style={{ backgroundImage: `url(${images[currentImage]})` }}
-      >
-        {/* Dark Overlay for Enhanced Readability */}
-        <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+      <div className="absolute inset-0">
+        {/* Current Image */}
+        <div
+          className="absolute inset-0 bg-grey bg-center transition-opacity duration-2000"
+          style={{
+            backgroundImage: `url(${images[currentImageIndex]})`,
+            opacity: currentImageIndex === 0 ? 1 : 0,
+          }}
+        ></div>
+
+        {/* Next Image */}
+        <div
+          className="absolute inset-0 bg-grey bg-center transition-opacity duration-2000"
+          style={{
+            backgroundImage: `url(${images[(currentImageIndex + 1) % images.length]})`,
+            opacity: currentImageIndex === 0 ? 0 : 1,
+          }}
+        ></div>
       </div>
-      
+
+      {/* Dark Overlay for Enhanced Readability */}
+      <div className="absolute inset-0 bg-black bg-opacity-50"></div>
+
       {/* Hero Content */}
       <div className="relative z-10 h-full flex items-center justify-center text-center px-4">
         <div className="max-w-3xl">

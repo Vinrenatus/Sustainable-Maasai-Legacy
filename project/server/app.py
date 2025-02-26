@@ -130,156 +130,9 @@ class UserLogin(Resource):
         return {"access_token": access_token}, 200
 
 
-class NewsResource(Resource):
-    def options(self, news_id=None):
-        return {}, 200
-
-    def get(self, news_id=None):
-        try:
-            if news_id:
-                news = News.query.get(news_id)
-                if not news:
-                    return {"message": "News article not found"}, 404
-                return {
-                    "id": news.id,
-                    "title": news.title,
-                    "content": news.content,
-                    "image_url": news.image_url,
-                    "created_at": news.created_at.strftime("%Y-%m-%d %H:%M:%S")
-                }, 200
-
-            news_list = News.query.all()
-            return {
-                "news": [
-                    {
-                        "id": n.id,
-                        "title": n.title,
-                        "content": n.content,
-                        "image_url": n.image_url,
-                        "created_at": n.created_at.strftime("%Y-%m-%d %H:%M:%S")
-                    } for n in news_list
-                ]
-            }, 200
-        except Exception as e:
-            app.logger.error("Error fetching news: %s", str(e), exc_info=True)
-            return {"error": "Internal Server Error"}, 500
-
-    @admin_required
-    def post(self):
-        data = news_parser.parse_args()
-        if not data["title"] or not data["content"]:
-            return {"message": "Title and content are required"}, 400
-
-        try:
-            new_news = News(
-                title=data["title"],
-                content=data["content"],
-                image_url=data["image_url"] if data["image_url"] else None
-            )
-            db.session.add(new_news)
-            db.session.commit()
-            return {"message": "News article created successfully!"}, 201
-        except Exception as e:
-            app.logger.error("Error creating news: %s", str(e), exc_info=True)
-            return {"error": "Internal Server Error"}, 500
-
-    @admin_required
-    def put(self, news_id):
-        data = news_parser.parse_args()
-        news = News.query.get(news_id)
-        if not news:
-            return {"message": "News article not found"}, 404
-
-        if not data["title"] or not data["content"]:
-            return {"message": "Title and content are required"}, 400
-
-        try:
-            news.title = data["title"]
-            news.content = data["content"]
-            news.image_url = data["image_url"] if data["image_url"] else news.image_url
-            db.session.commit()
-            return {"message": "News article updated successfully!"}, 200
-        except Exception as e:
-            app.logger.error("Error updating news: %s", str(e), exc_info=True)
-            return {"error": "Internal Server Error"}, 500
-
-    @admin_required
-    def delete(self, news_id):
-        news = News.query.get(news_id)
-        if not news:
-            return {"message": "News article not found"}, 404
-
-        try:
-            db.session.delete(news)
-            db.session.commit()
-            return {"message": "News article deleted successfully!"}, 200
-        except Exception as e:
-            app.logger.error("Error deleting news: %s", str(e), exc_info=True)
-            return {"error": "Internal Server Error"}, 500
 
 
-class ProductResource(Resource):
-    def options(self):
-        return {}, 200
 
-    def get(self):
-        try:
-            products = Product.query.all()
-            result = [
-                {
-                    "id": p.id,
-                    "name": p.name,
-                    "price": p.price,
-                    "description": p.description,
-                    "image_url": p.image_url
-                } for p in products
-            ]
-            return {"products": result}, 200
-        except Exception as e:
-            app.logger.error("Error fetching products: %s", str(e), exc_info=True)
-            return {"error": "Internal Server Error"}, 500
-
-    @admin_required
-    def post(self):
-        data = request.get_json()
-        try:
-            product = Product(**data)
-            db.session.add(product)
-            db.session.commit()
-            return {"message": "Product created successfully!"}, 201
-        except Exception as e:
-            app.logger.error("Error creating product: %s", str(e), exc_info=True)
-            return {"error": "Internal Server Error"}, 500
-
-    @admin_required
-    def put(self, product_id):
-        data = request.get_json()
-        product = Product.query.get(product_id)
-        if not product:
-            return {"message": "Product not found"}, 404
-        try:
-            product.name = data.get("name", product.name)
-            product.price = data.get("price", product.price)
-            product.description = data.get("description", product.description)
-            product.image_url = data.get("image_url", product.image_url)
-            db.session.commit()
-            return {"message": "Product updated successfully!"}, 200
-        except Exception as e:
-            app.logger.error("Error updating product: %s", str(e), exc_info=True)
-            return {"error": "Internal Server Error"}, 500
-
-    @admin_required
-    def delete(self, product_id):
-        product = Product.query.get(product_id)
-        if not product:
-            return {"message": "Product not found"}, 404
-        try:
-            db.session.delete(product)
-            db.session.commit()
-            return {"message": "Product deleted successfully!"}, 200
-        except Exception as e:
-            app.logger.error("Error deleting product: %s", str(e), exc_info=True)
-            return {"error": "Internal Server Error"}, 500
 
 
 class CheckoutResource(Resource):
@@ -370,57 +223,6 @@ class CheckoutResource(Resource):
             return {"error": "Pesapal Order Submission Exception"}, 500
 
 
-class AdminDashboardResource(Resource):
-    @admin_required
-    def get(self):
-        try:
-            contacts = ContactMessage.query.all()
-            applications = WarriorApplication.query.all()
-            users = User.query.all()
-            orders = Order.query.all()
-
-            contacts_data = [{
-                "id": c.id,
-                "name": c.name,
-                "email": c.email,
-                "subject": c.subject,
-                "message": c.message,
-                "submitted_at": c.submitted_at.strftime("%Y-%m-%d %H:%M:%S")
-            } for c in contacts]
-
-            applications_data = [{
-                "id": a.id,
-                "name": a.name,
-                "age": a.age,
-                "email": a.email,
-                "phone": a.phone,
-                "reason": a.reason
-            } for a in applications]
-
-            users_data = [{
-                "id": u.id,
-                "username": u.username,
-                "email": u.email,
-                "role": u.role
-            } for u in users]
-
-            orders_data = [{
-                "id": o.id,
-                "total_amount": o.total_amount,
-                "status": o.status,
-                "created_at": o.created_at.strftime("%Y-%m-%d %H:%M:%S")
-            } for o in orders]
-
-            return {
-                "contacts": contacts_data,
-                "applications": applications_data,
-                "users": users_data,
-                "orders": orders_data
-            }, 200
-        except Exception as e:
-            app.logger.error("Error fetching admin dashboard data: %s", str(e), exc_info=True)
-            return {"error": "Internal Server Error"}, 500
-
 
 class ContactResource(Resource):
     def options(self):
@@ -436,9 +238,214 @@ class ContactResource(Resource):
         except Exception as e:
             app.logger.error("Error submitting contact message: %s", str(e), exc_info=True)
             return {"error": "Internal Server Error"}, 500
+# ------------------------------
+# News Resource
+# ------------------------------
+
+class NewsResource(Resource):
+    def options(self, news_id=None):
+        return {}, 200
+
+    def get(self, news_id=None):
+        try:
+            if news_id:
+                news = News.query.get(news_id)
+                if not news:
+                    return {"message": "News article not found"}, 404
+                return {
+                    "id": news.id,
+                    "title": news.title,
+                    "content": news.content,
+                    "image_url": news.image_url,
+                    "created_at": news.created_at.strftime("%Y-%m-%d %H:%M:%S")
+                }, 200
+
+            news_list = News.query.all()
+            return {
+                "news": [
+                    {
+                        "id": n.id,
+                        "title": n.title,
+                        "content": n.content,
+                        "image_url": n.image_url,
+                        "created_at": n.created_at.strftime("%Y-%m-%d %H:%M:%S")
+                    } for n in news_list
+                ]
+            }, 200
+        except Exception as e:
+            app.logger.error("Error fetching news: %s", str(e), exc_info=True)
+            return {"error": "Internal Server Error"}, 500
+
+    @admin_required
+    def post(self):
+        data = request.get_json()
+        if not data.get("title") or not data.get("content"):
+            return {"message": "Title and content are required"}, 400
+
+        try:
+            new_news = News(
+                title=data["title"],
+                content=data["content"],
+                image_url=data.get("image_url")
+            )
+            db.session.add(new_news)
+            db.session.commit()
+            return {"message": "News article created successfully!"}, 201
+        except Exception as e:
+            app.logger.error("Error creating news: %s", str(e), exc_info=True)
+            return {"error": "Internal Server Error"}, 500
+
+    @admin_required
+    def put(self, news_id):
+        data = request.get_json()
+        news = News.query.get(news_id)
+        if not news:
+            return {"message": "News article not found"}, 404
+
+        if not data.get("title") or not data.get("content"):
+            return {"message": "Title and content are required"}, 400
+
+        try:
+            news.title = data.get("title", news.title)
+            news.content = data.get("content", news.content)
+            news.image_url = data.get("image_url", news.image_url)
+            db.session.commit()
+            return {"message": "News article updated successfully!"}, 200
+        except Exception as e:
+            app.logger.error("Error updating news: %s", str(e), exc_info=True)
+            return {"error": "Internal Server Error"}, 500
+
+    @admin_required
+    def delete(self, news_id):
+        news = News.query.get(news_id)
+        if not news:
+            return {"message": "News article not found"}, 404
+
+        try:
+            db.session.delete(news)
+            db.session.commit()
+            return {"message": "News article deleted successfully!"}, 200
+        except Exception as e:
+            app.logger.error("Error deleting news: %s", str(e), exc_info=True)
+            return {"error": "Internal Server Error"}, 500
 
 
 # ------------------------------
+# Product Resource
+# ------------------------------
+
+class ProductResource(Resource):
+    def options(self):
+        return {}, 200
+
+    def get(self):
+        try:
+            products = Product.query.all()
+            result = [
+                {
+                    "id": p.id,
+                    "name": p.name,
+                    "price": p.price,
+                    "description": p.description,
+                    "image_url": p.image_url
+                } for p in products
+            ]
+            return {"products": result}, 200
+        except Exception as e:
+            app.logger.error("Error fetching products: %s", str(e), exc_info=True)
+            return {"error": "Internal Server Error"}, 500
+
+    @admin_required
+    def post(self):
+        data = request.get_json()
+        if not data.get("name") or not data.get("price") or not data.get("description"):
+            return {"message": "Name, price, and description are required"}, 400
+
+        try:
+            product = Product(
+                name=data["name"],
+                price=data["price"],
+                description=data["description"],
+                image_url=data.get("image_url")
+            )
+            db.session.add(product)
+            db.session.commit()
+            return {"message": "Product created successfully!"}, 201
+        except Exception as e:
+            app.logger.error("Error creating product: %s", str(e), exc_info=True)
+            return {"error": "Internal Server Error"}, 500
+
+    @admin_required
+    def put(self, product_id):
+        data = request.get_json()
+        product = Product.query.get(product_id)
+        if not product:
+            return {"message": "Product not found"}, 404
+
+        try:
+            product.name = data.get("name", product.name)
+            product.price = data.get("price", product.price)
+            product.description = data.get("description", product.description)
+            product.image_url = data.get("image_url", product.image_url)
+            db.session.commit()
+            return {"message": "Product updated successfully!"}, 200
+        except Exception as e:
+            app.logger.error("Error updating product: %s", str(e), exc_info=True)
+            return {"error": "Internal Server Error"}, 500
+
+    @admin_required
+    def delete(self, product_id):
+        product = Product.query.get(product_id)
+        if not product:
+            return {"message": "Product not found"}, 404
+
+        try:
+            db.session.delete(product)
+            db.session.commit()
+            return {"message": "Product deleted successfully!"}, 200
+        except Exception as e:
+            app.logger.error("Error deleting product: %s", str(e), exc_info=True)
+            return {"error": "Internal Server Error"}, 500
+
+
+# ------------------------------
+# Admin Dashboard Resource
+# ------------------------------
+
+class AdminDashboardResource(Resource):
+    @admin_required
+    def get(self):
+        try:
+            # Fetch news and products directly from the database
+            news_list = News.query.all()
+            products_list = Product.query.all()
+
+            # Prepare the response data
+            news_data = [
+                {
+                    "id": n.id,
+                    "title": n.title,
+                    "content": n.content,
+                    "image_url": n.image_url,
+                    "created_at": n.created_at.strftime("%Y-%m-%d %H:%M:%S")
+                } for n in news_list
+            ]
+
+            products_data = [
+                {
+                    "id": p.id,
+                    "name": p.name,
+                    "price": float(p.price),  # Ensure price is serialized as a float
+                    "description": p.description,
+                    "image_url": p.image_url
+                } for p in products_list
+            ]
+
+            return jsonify({"news": news_data, "products": products_data}), 200
+        except Exception as e:
+            app.logger.error("Error fetching admin dashboard data: %s", str(e), exc_info=True)
+            return jsonify({"error": "Internal Server Error"}), 500
+        
 # Endpoint Registrations
 # ------------------------------
 api.add_resource(WarriorApplicationResource, "/api/warrior-application")

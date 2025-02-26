@@ -17,6 +17,7 @@ const Story = lazy(() => import('./pages/Story'));
 const Contact = lazy(() => import('./pages/Contact'));
 const BecomeWarrior = lazy(() => import('./pages/BecomeWarrior'));
 const NewsPage = lazy(() => import('./pages/NewsPage'));
+const NewsDetail = lazy(() => import('./pages/NewsDetail')); // Add this line
 const Store = lazy(() => import('./pages/Store'));
 const Cart = lazy(() => import('./pages/Cart'));
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
@@ -63,6 +64,7 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/become-warrior" element={<BecomeWarrior />} />
                   <Route path="/news" element={<NewsPage />} />
+                  <Route path="/news/:id" element={<NewsDetail />} /> {/* Add this route */}
                   <Route path="/store" element={<Store />} />
                   <Route path="/cart" element={<Cart onCheckout={openModal} />} />
                   <Route path="/admin" element={<AdminDashboard />} />

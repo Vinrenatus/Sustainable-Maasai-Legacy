@@ -30,56 +30,78 @@ const Navbar = () => {
 
   const navLinks = (
     <>
-      <Link
-        to="/"
-        onClick={() => setIsMenuOpen(false)}
-        className="hover:text-amber-400 transition-colors duration-300"
+      <button
+        type="button"
+        onClick={() => {
+          navigate('/');
+          setIsMenuOpen(false);
+        }}
+        className="px-4 py-2 bg-transparent border border-transparent hover:border-amber-400 hover:bg-gray-700 rounded transition-all duration-300 font-bold"
       >
         Home
-      </Link>
-      <Link
-        to="/story"
-        onClick={() => setIsMenuOpen(false)}
-        className="hover:text-amber-400 transition-colors duration-300"
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          navigate('/story');
+          setIsMenuOpen(false);
+        }}
+        className="px-4 py-2 bg-transparent border border-transparent hover:border-amber-400 hover:bg-gray-700 rounded transition-all duration-300 font-bold"
       >
         Story
-      </Link>
-      <Link
-        to="/news"
-        onClick={() => setIsMenuOpen(false)}
-        className="hover:text-amber-400 transition-colors duration-300"
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          navigate('/news');
+          setIsMenuOpen(false);
+        }}
+        className="px-4 py-2 bg-transparent border border-transparent hover:border-amber-400 hover:bg-gray-700 rounded transition-all duration-300 font-bold"
       >
         News
-      </Link>
-      <Link
-        to="/store"
-        onClick={() => setIsMenuOpen(false)}
-        className="hover:text-amber-400 transition-colors duration-300"
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          navigate('/store');
+          setIsMenuOpen(false);
+        }}
+        className="px-4 py-2 bg-transparent border border-transparent hover:border-amber-400 hover:bg-gray-700 rounded transition-all duration-300 font-bold"
       >
         Store
-      </Link>
-      <Link
-        to="/contact"
-        onClick={() => setIsMenuOpen(false)}
-        className="hover:text-amber-400 transition-colors duration-300"
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          navigate('/contact');
+          setIsMenuOpen(false);
+        }}
+        className="px-4 py-2 bg-transparent border border-transparent hover:border-amber-400 hover:bg-gray-700 rounded transition-all duration-300 font-bold"
       >
         Contact
-      </Link>
-      <Link
-        to="/become-warrior"
-        onClick={() => setIsMenuOpen(false)}
-        className="hover:text-amber-400 transition-colors duration-300"
+      </button>
+      <button
+        type="button"
+        onClick={() => {
+          navigate('/become-warrior');
+          setIsMenuOpen(false);
+        }}
+        className="px-4 py-2 bg-transparent border border-transparent hover:border-amber-400 hover:bg-gray-700 rounded transition-all duration-300 font-bold"
       >
         Become Warrior
-      </Link>
-      {user && user.role === 'admin' && (
-        <Link
-          to="/admin"
-          onClick={() => setIsMenuOpen(false)}
-          className="hover:text-amber-400 transition-colors duration-300"
+      </button>
+      {/* Add Admin Button for all logged-in users */}
+      {user && (
+        <button
+          type="button"
+          onClick={() => {
+            navigate('/admin');
+            setIsMenuOpen(false);
+          }}
+          className="px-4 py-2 bg-transparent border border-transparent hover:border-amber-400 hover:bg-gray-700 rounded transition-all duration-300 font-bold"
         >
-          Admin Panel
-        </Link>
+          Admin
+        </button>
       )}
     </>
   );
@@ -88,28 +110,32 @@ const Navbar = () => {
     <>
       {!user ? (
         <>
-          <Link
-            to="/login"
-            onClick={() => setIsMenuOpen(false)}
-            className="hover:text-amber-400 transition-colors duration-300"
+          <button
+            type="button"
+            onClick={() => {
+              navigate('/login');
+              setIsMenuOpen(false);
+            }}
+            className="px-4 py-2 bg-transparent border border-transparent hover:border-amber-400 hover:bg-gray-700 rounded transition-all duration-300 font-bold"
           >
             Login
-          </Link>
-          <Link
-            to="/signup"
-            onClick={() => setIsMenuOpen(false)}
-            className="hover:text-amber-400 transition-colors duration-300"
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              navigate('/signup');
+              setIsMenuOpen(false);
+            }}
+            className="px-4 py-2 bg-transparent border border-transparent hover:border-amber-400 hover:bg-gray-700 rounded transition-all duration-300 font-bold"
           >
             Signup
-          </Link>
+          </button>
         </>
       ) : (
         <button
-          onClick={() => {
-            handleLogout();
-            setIsMenuOpen(false);
-          }}
-          className="hover:text-amber-400 transition-colors duration-300"
+          type="button"
+          onClick={handleLogout}
+          className="px-4 py-2 bg-transparent border border-transparent hover:border-amber-400 hover:bg-gray-700 rounded transition-all duration-300 font-bold"
         >
           Logout
         </button>
@@ -137,8 +163,8 @@ const Navbar = () => {
               />
             </Link>
           </div>
-          <div className="hidden md:flex items-center space-x-6">{navLinks}</div>
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden md:flex items-center space-x-4">{navLinks}</div>
+          <div className="hidden md:flex items-center space-x-4">
             <form
               onSubmit={handleSearchSubmit}
               className="flex items-center border border-gray-700 rounded overflow-hidden"
